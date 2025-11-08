@@ -1,13 +1,25 @@
 import argparse
+import secrets
+from datetime import timedelta
 
-from flask import Flask, jsonify, render_template, request
+from flask import Flask, jsonify, render_template, request, session
+from flask_session import Session
 from waitress import serve
 
 app = Flask(__name__)
 
-# Global state storage (simpler approach for single-user demo)
-# In production, use proper session management or database
-app_state = {"stored_flag": None, "stored_text": None, "counter": 0}
+# Configure Flask-Session for server-side sessions
+app.config["SECRET_KEY"] = secrets.token_hex(32)
+app.config["SESSION_TYPE"] = "filesystem"
+app.config["SESSION_PERMANENT"] = True
+app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(hours=24)
+app.config["SESSION_FILE_DIR"] = "/tmp/flask_session"
+app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
+app.config["SESSION_COOKIE_SECURE"] = False  # Set to True if using HTTPS
+app.config["SESSION_COOKIE_HTTPONLY"] = True
+
+# Initialize Flask-Session
+Session(app)
 
 
 @app.route("/")
@@ -16,15 +28,13 @@ def index():
     Main page route
     Reset state when page is loaded (browser refresh)
     """
-    global app_state
-
     # Reset state on page load
-    app_state["stored_flag"] = None
-    app_state["stored_text"] = None
-    app_state["counter"] = 0
+    session["stored_flag"] = None
+    session["stored_text"] = None
+    session["counter"] = 0
 
     print("DEBUG: Page loaded - state reset")
-    print(f"DEBUG: State after page load: {app_state}")
+    print(f"DEBUG: State after page load: {dict(session)}")
 
     return render_template("index.html")
 
@@ -34,19 +44,17 @@ def submit():
     """
     Handle form submission
     """
-    global app_state
-
     data = request.get_json()
     flag = data.get("flag")
     input_text = data.get("input_text", "").strip()
     print(f"{data=}")
 
-    # Get current state
-    stored_flag = app_state["stored_flag"]
-    stored_text = app_state["stored_text"]
-    counter = app_state["counter"]
+    # Get current state from session
+    stored_flag = session.get("stored_flag")
+    stored_text = session.get("stored_text")
+    counter = session.get("counter", 0)
     print(f"DEBUG: Before processing - {stored_flag=}, {stored_text=}, {counter=}")
-    print(f"DEBUG: State contents: {app_state}")
+    print(f"DEBUG: State contents: {dict(session)}")
 
     # Validation: check if input is empty
     if not input_text:
@@ -79,15 +87,15 @@ def submit():
             if counter > 0 and counter % 3 == 0:
                 output_text = f"{bonus_symbol*3} {output_text} {bonus_symbol*3}"
 
-    # Store current input
-    app_state["stored_flag"] = flag
-    app_state["stored_text"] = input_text
-    app_state["counter"] = counter
+    # Store current input in session
+    session["stored_flag"] = flag
+    session["stored_text"] = input_text
+    session["counter"] = counter
 
     print(
-        f"DEBUG: After storing - stored_flag={app_state['stored_flag']}, stored_text={app_state['stored_text']}, counter={app_state['counter']}"
+        f"DEBUG: After storing - stored_flag={session.get('stored_flag')}, stored_text={session.get('stored_text')}, counter={session.get('counter')}"
     )
-    print(f"DEBUG: State contents after: {app_state}")
+    print(f"DEBUG: State contents after: {dict(session)}")
 
     return jsonify(
         {
@@ -105,16 +113,14 @@ def reset():
     """
     Reset the application state
     """
-    global app_state
-
     print("DEBUG: Reset called")
-    print(f"DEBUG: State before reset: {app_state}")
+    print(f"DEBUG: State before reset: {dict(session)}")
 
-    app_state["stored_flag"] = None
-    app_state["stored_text"] = None
-    app_state["counter"] = 0
+    session["stored_flag"] = None
+    session["stored_text"] = None
+    session["counter"] = 0
 
-    print(f"DEBUG: State after reset: {app_state}")
+    print(f"DEBUG: State after reset: {dict(session)}")
 
     return jsonify({"success": True, "counter": 0, "stored_flag": None})
 
@@ -126,9 +132,9 @@ def get_state():
     """
     return jsonify(
         {
-            "stored_flag": app_state["stored_flag"],
-            "stored_text": app_state["stored_text"],
-            "counter": app_state["counter"],
+            "stored_flag": session.get("stored_flag"),
+            "stored_text": session.get("stored_text"),
+            "counter": session.get("counter", 0),
         }
     )
 
