@@ -1,0 +1,38 @@
+{
+    // Python Settings
+    "python.analysis.autoImportCompletions": true,
+    "python.analysis.autoSearchPaths": true,
+    "python.analysis.typeCheckingMode": "basic",
+    "files.associations": {
+        "*.py": "python"
+    },
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true,
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.black-formatter",
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+            "source.organizeImports": "explicit"
+        },
+    },
+    "isort.args": [
+        "--profile",
+        "black",
+        "--project",
+        "loc"
+    ],
+    "black-formatter.args": [
+        "--line-length=100"
+    ],
+
+    // Terminal Settings
+    "python.terminal.shellIntegration.enabled": false,
+
+    // Other Settings
+    "files.trimFinalNewlines": true,
+    "files.trimTrailingWhitespace": true,
+    "files.insertFinalNewline": true,
+    "[markdown]": {
+        "files.trimTrailingWhitespace": false
+    },
+}

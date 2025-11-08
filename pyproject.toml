@@ -1,0 +1,15 @@
+[project]
+name = "loc"
+version = "0.1.0"
+description = "Law of Cycles"
+requires-python = ">=3.10"
+dependencies = [
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["loc*"]
+
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
