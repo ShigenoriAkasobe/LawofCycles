@@ -6,6 +6,6 @@ MAIN_DIR=${ROOT_DIR}/loc
 
 pushd ${MAIN_DIR} > /dev/null
 
-uv run --project ${ROOT_DIR} app.py
+uv run --project ${ROOT_DIR} app.py --debug
 
 popd > /dev/null

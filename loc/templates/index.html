@@ -176,11 +176,26 @@
             justify-content: center;
             word-break: break-all;
             font-style: italic;
+            transition: all 0.3s ease;
         }
 
         .stored-preview.has-content {
             color: #6c757d;
             border-color: #adb5bd;
+        }
+
+        .stored-preview.flag-a-stored {
+            background: #ffe0e0;
+            border-color: #ffb3b3;
+            color: #c0392b;
+            border-style: solid;
+        }
+
+        .stored-preview.flag-b-stored {
+            background: #e0e6ff;
+            border-color: #b3c7ff;
+            color: #2c3e91;
+            border-style: solid;
         }
 
         .bonus-symbol-input {
@@ -519,12 +534,21 @@
             }
 
             // Update stored text preview
+            // Remove all flag-related classes first
+            storedPreview.classList.remove('has-content', 'flag-a-stored', 'flag-b-stored');
+
             if (data.stored_text) {
                 storedPreview.textContent = data.stored_text;
                 storedPreview.classList.add('has-content');
+
+                // Add color based on stored flag
+                if (data.stored_flag === 'A') {
+                    storedPreview.classList.add('flag-a-stored');
+                } else if (data.stored_flag === 'B') {
+                    storedPreview.classList.add('flag-b-stored');
+                }
             } else {
                 storedPreview.textContent = '(empty)';
-                storedPreview.classList.remove('has-content');
             }
         }
 
