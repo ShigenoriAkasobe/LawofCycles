@@ -14,15 +14,15 @@ def index():
     Reset state when page is loaded (browser refresh)
     """
     global app_state
-    
+
     # Reset state on page load
     app_state["stored_flag"] = None
     app_state["stored_text"] = None
     app_state["counter"] = 0
-    
+
     print("DEBUG: Page loaded - state reset")
     print(f"DEBUG: State after page load: {app_state}")
-    
+
     return render_template("index.html")
 
 
@@ -80,7 +80,13 @@ def submit():
     print(f"DEBUG: State contents after: {app_state}")
 
     return jsonify(
-        {"success": True, "output_text": output_text, "stored_flag": flag, "counter": counter}
+        {
+            "success": True,
+            "output_text": output_text,
+            "stored_flag": flag,
+            "stored_text": input_text,
+            "counter": counter,
+        }
     )
 
 
@@ -108,7 +114,13 @@ def get_state():
     """
     Get current application state
     """
-    return jsonify({"stored_flag": app_state["stored_flag"], "counter": app_state["counter"]})
+    return jsonify(
+        {
+            "stored_flag": app_state["stored_flag"],
+            "stored_text": app_state["stored_text"],
+            "counter": app_state["counter"],
+        }
+    )
 
 
 if __name__ == "__main__":
