@@ -59,6 +59,9 @@ def submit():
             }
         )
 
+    # Get bonus symbol (default to star emoji)
+    bonus_symbol = data.get("bonus_symbol", "🌟")
+
     # Determine output
     output_text = ""
     if stored_flag is not None and stored_flag != flag:
@@ -68,6 +71,10 @@ def submit():
         # Increment counter when transitioning from B to A
         if flag == "A" and stored_flag == "B":
             counter += 1
+
+            # Add bonus symbol every 3 cycles
+            if counter > 0 and counter % 3 == 0:
+                output_text = f"{bonus_symbol*3} {output_text} {bonus_symbol*3}"
 
     # Store current input
     app_state["stored_flag"] = flag

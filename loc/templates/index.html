@@ -183,6 +183,46 @@
             border-color: #adb5bd;
         }
 
+        .bonus-symbol-input {
+            flex: 1;
+            max-width: 150px;
+            padding: 15px;
+            background: #fff9e6;
+            border: 2px solid #ffd93d;
+            border-radius: 10px;
+            font-size: 24px;
+            text-align: center;
+            min-height: 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .bonus-symbol-input label {
+            font-size: 10px;
+            color: #f39c12;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .bonus-symbol-input input {
+            width: 50px;
+            padding: 5px;
+            border: 1px solid #f39c12;
+            border-radius: 5px;
+            font-size: 24px;
+            text-align: center;
+            background: white;
+        }
+
+        .bonus-symbol-input input:focus {
+            outline: none;
+            border-color: #e67e22;
+            box-shadow: 0 0 5px rgba(243, 156, 18, 0.3);
+        }
+
         button {
             font-weight: 600;
             border: none;
@@ -309,8 +349,9 @@
                 (empty)
             </div>
             <button class="submit-btn" onclick="submitForm()">Submit</button>
-            <div class="stored-preview" style="visibility: hidden;">
-                <!-- Spacer for symmetry -->
+            <div class="bonus-symbol-input">
+                <label>BONUS</label>
+                <input type="text" id="bonusSymbol" value="🌟" maxlength="3">
             </div>
         </div>
 
@@ -359,6 +400,9 @@
                 return;
             }
 
+            // Get bonus symbol
+            const bonusSymbol = document.getElementById('bonusSymbol').value || '🌟';
+
             // Submit to server
             fetch('/submit', {
                 method: 'POST',
@@ -367,7 +411,8 @@
                 },
                 body: JSON.stringify({
                     flag: selectedFlag,
-                    input_text: inputText
+                    input_text: inputText,
+                    bonus_symbol: bonusSymbol
                 })
             })
             .then(response => response.json())
