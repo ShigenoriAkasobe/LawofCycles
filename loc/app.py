@@ -1,4 +1,7 @@
+import argparse
+
 from flask import Flask, jsonify, render_template, request
+from waitress import serve
 
 app = Flask(__name__)
 
@@ -130,5 +133,26 @@ def get_state():
     )
 
 
+def get_args():
+    parser = argparse.ArgumentParser(description="GPU Performance Benchmark WebApp")
+    parser.add_argument(
+        "--debug",
+        action="store_true",
+        default=False,
+        help="Run the app in debug mode (default: False)",
+    )
+    return parser.parse_args()
+
+
 if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0", port=5001)
+    host_num = "0.0.0.0"
+    port_num = 5001
+
+    print("Starting the application...")
+    print(f"Please access http://localhost:{port_num} in your browser")
+
+    args = get_args()
+    if args.debug is True:
+        app.run(debug=True, host=host_num, port=port_num)
+    else:
+        serve(app, host=host_num, port=port_num)

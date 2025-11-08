@@ -5,6 +5,7 @@ description = "Law of Cycles"
 requires-python = ">=3.10"
 dependencies = [
     "Flask",
+    "waitress",
 ]
 
 [tool.setuptools.packages.find]
