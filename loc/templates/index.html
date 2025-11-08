@@ -354,9 +354,20 @@
                     // Clear input
                     document.getElementById('inputText').value = '';
 
-                    // Uncheck flags
-                    flagA.checked = false;
-                    flagB.checked = false;
+                    // Auto-select the opposite flag for next input
+                    if (data.stored_flag === 'A') {
+                        // A is stored, so next input should be B
+                        flagA.checked = false;
+                        flagB.checked = true;
+                    } else if (data.stored_flag === 'B') {
+                        // B is stored, so next input should be A
+                        flagA.checked = true;
+                        flagB.checked = false;
+                    } else {
+                        // No flag stored (shouldn't happen after submit, but just in case)
+                        flagA.checked = false;
+                        flagB.checked = false;
+                    }
 
                     // Success animation
                     document.querySelector('.container').classList.add('success-animation');
