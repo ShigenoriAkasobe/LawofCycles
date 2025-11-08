@@ -1,4 +1,5 @@
 import argparse
+import os
 import secrets
 from datetime import timedelta
 
@@ -9,13 +10,14 @@ from waitress import serve
 app = Flask(__name__)
 
 # Configure Flask-Session for server-side sessions
-app.config["SECRET_KEY"] = secrets.token_hex(32)
+app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", secrets.token_hex(32))
 app.config["SESSION_TYPE"] = "filesystem"
 app.config["SESSION_PERMANENT"] = True
 app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(hours=24)
 app.config["SESSION_FILE_DIR"] = "/tmp/flask_session"
 app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
-app.config["SESSION_COOKIE_SECURE"] = False  # Set to True if using HTTPS
+# Automatically detect production environment (Render sets RENDER env var)
+app.config["SESSION_COOKIE_SECURE"] = os.environ.get("RENDER") is not None
 app.config["SESSION_COOKIE_HTTPONLY"] = True
 
 # Initialize Flask-Session
