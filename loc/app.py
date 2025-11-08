@@ -2,6 +2,7 @@ import argparse
 import os
 import secrets
 from datetime import timedelta
+from pathlib import Path
 
 from flask import Flask, jsonify, render_template, request, session
 from flask_session import Session
@@ -9,19 +10,36 @@ from waitress import serve
 
 app = Flask(__name__)
 
+# Ensure session directory exists
+session_dir = Path("/tmp/flask_session")
+session_dir.mkdir(parents=True, exist_ok=True)
+
 # Configure Flask-Session for server-side sessions
+# Use a fixed SECRET_KEY in production (set via environment variable)
 app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", secrets.token_hex(32))
 app.config["SESSION_TYPE"] = "filesystem"
 app.config["SESSION_PERMANENT"] = True
 app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(hours=24)
-app.config["SESSION_FILE_DIR"] = "/tmp/flask_session"
+app.config["SESSION_FILE_DIR"] = str(session_dir)
 app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
 # Automatically detect production environment (Render sets RENDER env var)
 app.config["SESSION_COOKIE_SECURE"] = os.environ.get("RENDER") is not None
 app.config["SESSION_COOKIE_HTTPONLY"] = True
+# Add session cookie name to avoid conflicts
+app.config["SESSION_COOKIE_NAME"] = "exchange_box_session"
 
 # Initialize Flask-Session
 Session(app)
+
+
+# Add debug logging for session
+@app.before_request
+def log_session_info():
+    """Log session information for debugging"""
+    if request.endpoint:  # Skip for static files
+        print(f"DEBUG: Request to {request.endpoint}")
+        print(f"DEBUG: Session ID: {session.get('_id', 'No session ID')}")
+        print(f"DEBUG: Session data: {dict(session)}")
 
 
 @app.route("/")
