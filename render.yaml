@@ -3,6 +3,6 @@ services:
     name: LawofCycles
     env: python
     buildCommand: "pip install -r requirements.txt"
-    startCommand: "gunicorn app:app"
+    startCommand: "gunicorn loc.app:app"
     envVars:
       PYTHON_VERSION: 3.10
